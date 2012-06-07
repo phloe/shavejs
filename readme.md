@@ -30,29 +30,29 @@ Returns an instance of `shave`.
 ### Methods
 
 #### `helper`
-##### Arguments
+###### Arguments
 * `name` - (String) The name to register the helper function by.
 * `func` - (Function) The helper function.
 
 #### `helpers`
-##### Arguments
+###### Arguments
 * `_helpers` - (Object) Containing helper functions; keys for names, values for functions.
 
 #### `data`
-##### Arguments
+###### Arguments
 * `data` - (Object) The data to populate the template.
 
 #### `element`
-##### Arguments
+###### Arguments
 * `element` - (Element) The element that will get targeted by the `render` method.
 
 #### `template`
-##### Arguments
+###### Arguments
 * `url` - (String) The url (or id) of the template.
 * `template` - (String) Optional. A mustache template.
 
 #### `ready`
-##### Arguments
+###### Arguments
 * `callback` - (Function) A function to be executed when the template is ready for use. Bound to `this`.
  
 
@@ -60,7 +60,7 @@ Returns an instance of `shave`.
 Preprocesses the data if needed and passes it through the template.
 If the `shave` instance has an element defined the resulting html is inserted into it and the instance is returned.
 Otherwise the html is returned. 
-##### Returns
+###### Returns
 A `shave` instance or an html string.
 
 ### Manifest
