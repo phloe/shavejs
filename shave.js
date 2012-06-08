@@ -11,6 +11,9 @@
 	}
 }(this, function (mustache) {
 	
+	// Mustache isn't an AMD - but exposes a global
+	mustache = mustache || Mustache;
+	
 	var templates = {},
 		helpers = {},
 		isArray = Array.isArray || function (value) {
@@ -182,7 +185,6 @@
 			
 		}
 		
-		
 	};
 	
 	function preprocess (manifest, input) {
@@ -199,20 +201,26 @@
 			}
 			else {
 				// object
-				var value;
+				var split, helper, realKey;
 				output = {};
 				for (var key in manifest) {
-					value = manifest[key];
+					if (!(key in input)) {
+						split = key.split("|");
+						helper = (split.length > 1) ? split[1] : null;
+						realKey = split[0];
+						if (helper && helper in helpers && realKey in input) {
+							output[key] = helpers[helper](input[realKey]);
+							continue;
+						}
+					}
+					
 					output[key] = preprocess(manifest[key], input[key]);
 				}
 			}
 		}
 		else {
 			// non-iterable
-			var split = manifest.split("|"),
-				helper = (split.length > 1) ? split[1] : null;
-
-			output = (helper && helper in helpers) ? helpers[helper](input) : input;
+			output = input;
 		}
 		
 		return output;

@@ -73,7 +73,7 @@ If you define a json manifest as a comment in your template shavejs will use tha
 				{
 					"header": "string",
 					"text": "string",
-					"date": "date|isodate"
+					"published|time": "date"
 				}
 			]
 		}
@@ -81,9 +81,9 @@ If you define a json manifest as a comment in your template shavejs will use tha
 	{{#articles}}
 	<article>
 		{{#header}}<h1>{{header}}</h1>{{/header}}
-		{{#date}}<span>{{date}}</span>{{/date}}
+		{{#published|time}}<time>{{date|time}}</time>{{/published|time}}
 		{{#text}}<p>{{text}}</p>{{/text}}
 	</article>
 	{{/articles}}
 
-In the above example `date|isodate` tells shavejs to parse the property through a helper registered as `isodate` (if it exists).
+In the above example `date|time` tells shavejs to parse the property `published` from the data object through a helper registered as `time` (if it exists).
