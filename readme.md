@@ -81,7 +81,7 @@ If you define a json manifest as a comment in your template shavejs will use tha
 	{{#articles}}
 	<article>
 		{{#header}}<h1>{{header}}</h1>{{/header}}
-		{{#published|time}}<time>{{date|time}}</time>{{/published|time}}
+		{{#published|time}}<time>{{published|time}}</time>{{/published|time}}
 		{{#text}}<p>{{text}}</p>{{/text}}
 	</article>
 	{{/articles}}
