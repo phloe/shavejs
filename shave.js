@@ -11,7 +11,7 @@
 	}
 }(this, function (mustache) {
 	
-	// Mustache isn't an AMD - but exposes a global
+	// Mustache isn't really AMD - but exposes a global
 	mustache = mustache || Mustache;
 	
 	var templates = {},
@@ -21,32 +21,22 @@
 		};
 	
 	var Shave = function (options) {
+		this.state = "empty";
+		this.queue = [];
 		this.context = {};
-		
-		if (options) {
-		
-			var props = ["helpers", "data", "element", "ready", "template"],
-				l = props.length,
-				prop;
-			
-			for (var i = 0; i < l; i++) {
-				prop = props[i];
-				if (prop in options) {
-					this[prop](options[prop]);
-				}
-			}
-			
-		}
-		
 		return this;
 	};
 	
-	Shave.prototype = {
+	var prototype = {
 		
 		template: function (url, template) {
 			
 			if (!url) {
 				return this.context.template;
+			}
+			
+			if (!template && url == this.context.template) {
+				return this;
 			}
 			
 			if (template && !(url in templates)) {
@@ -57,72 +47,60 @@
 				var definition = templates[url];
 				this.context.template = definition.template;
 				this.context.manifest = definition.manifest;
+				this.context.helpers = definition.helpers;
 				
-				if (this.context.ready) {
-					this.context.ready.call(self);
-				}
 			}
 			else {
 				
 				// read template into cache
 				// parse manifest from json header
 				
+				this.state = "waiting";
+				
 				var self = this,
 					xhr = new XMLHttpRequest();
 				xhr.open("GET", url, true);
 				xhr.onload = function () {
 					var manifest, template,
-						match = xhr.responseText.match(/^(?:\{\{!([\s\S]*?|)!\}\})?([\s\S]*|)$/);
+						match = xhr.responseText.match(/^(?:\{\{!([\s\S]*?|)!\}\})?([\s\S]*|)$/),
+						_helpers = null;
 						
 					template = match[2];
 					manifest = match[1] || null;
 					
 					if (manifest) {
 						manifest = JSON.parse(manifest);
+						
+						_helpers = getHelperList(manifest);
 					}
 					
 					templates[url] = {
 						template: template,
-						manifest: manifest
+						manifest: manifest,
+						helpers: _helpers
 					};
 					
 					self.context.template = template;
 					self.context.manifest = manifest;
+					self.context.helpers = _helpers;
 					
-					if (self.context.ready) {
-						self.context.ready.call(self);
-					}
+					self.state = "ready";
 					
+					dequeue(self);
 				};
 				xhr.send(null);
 				
 			}
 			
-			return this;
-			
 		},
 		
-		ready: function (callback) {
-			
-			if (!callback) {
-				return this.context.ready || null;
-			}
-			
-			this.context.ready = callback;
-			
-			return this;
-			
-		},
-		
-		element: function (element) {
+		target: function (element) {
 			
 			if (!element) {
-				return this.context.element || null;	
+				return this.context.target || null;	
 			}
 			
-			this.context.element = element;
-			
-			return this;
+			this.context.target = element;
 			
 		},
 		
@@ -134,7 +112,6 @@
 			
 			this.context.data = data;
 			
-			return this;
 		},
 		
 		helper: function (name, func) {
@@ -145,7 +122,6 @@
 			
 			helpers[name] = func;
 			
-			return this;
 		},
 		
 		helpers: function (_helpers) {
@@ -158,11 +134,17 @@
 				helpers[name] = _helpers[name];
 			}
 			
-			return this;
-			
 		},
 		
-		render: function () {
+		render: function (callback) {
+			
+			if (!this.context.template) {
+				throw("Shave cannot render without a template!");
+			}
+	
+			if (!this.context.data) {
+				throw("Shave cannot render without data!");
+			}
 			
 			var manifest = this.context.manifest,
 				data = this.context.data,
@@ -170,12 +152,14 @@
 				output = (manifest) ? preprocess(manifest, data) : data,
 				html = mustache.to_html(template, output);
 			
-			if (this.context.element) {
-				this.context.element.innerHTML = html;
-				return this;
+			
+			if (this.context.target) {
+				this.context.target.innerHTML = html;
 			}
 			
-			return html;
+			if (typeof callback == "function") {
+				callback(html);
+			}
 			
 		},
 		
@@ -186,6 +170,63 @@
 		}
 		
 	};
+	
+	function makeQueueable (method) {
+	
+		return function () {
+			if (this.state != "waiting" && this.queue.length == 0) {
+				var ret = method.apply(this, arguments);
+				return (ret === undefined) ? this : ret;
+			}
+			else {
+				this.queue.push([method, arguments]);
+				return this;
+			}
+		};
+		
+	}
+	
+	for (var name in prototype) {
+		prototype[name] = makeQueueable(prototype[name]);
+	}
+	
+	Shave.prototype = prototype;
+	
+	function dequeue (shave) {
+	
+		if (shave.state != "waiting" && shave.queue.length > 0) {
+			var item = shave.queue.shift();
+			item[0].apply(shave, item[1]);
+			if (shave.queue.length > 0) {
+				setTimeout(function () {
+					dequeue(shave);
+				}, 1);
+			}
+		}
+		
+	}
+	
+	function getHelperList (manifest, deps) {
+		
+		deps = deps || []
+		
+		var value, split, helper;
+		
+		for (var key in manifest) {
+			split = key.split("|");
+			helper = (split.length > 1) ? split[1] : null;
+			if (helper && deps.indexOf(helper) == -1) {
+				deps.push(helper);
+			}
+			value = manifest[key];
+			if (typeof value == "object" && !isArray(value)) {
+				getHelperList(value, deps);
+			}
+		}
+		
+		return deps;
+		
+	}
 	
 	function preprocess (manifest, input) {
 		var output;
