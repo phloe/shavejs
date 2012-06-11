@@ -14,7 +14,7 @@ All without you having to contort your viewmodels to fit a template's needs.
 With helpers your viewmodels can have more complex data structures reduced to Mustache friendly data;
 eg, Date objects can be turned into a localized date string or a string representing the time of day - or both at the same time!
 
-And all this in less than 1.5Kb gzipped! :)
+And all this in a tiny queueable and chainable api less than 1.5Kb gzipped! :)
 
 * TODO: Remap your model to the data consumed by any given Mustache template. 
 
@@ -24,14 +24,14 @@ And all this in less than 1.5Kb gzipped! :)
 	shave()
 		.template("comments.mustache")
 		.data({
-			author: "Kanye West",
-			comment: "Imma let u finish...",
-			published: new Date("Sun Sep 13 2009 21:37:44")
-		},
-		{
-			author: "Taylor Swift",
-			comment: "·___·",
-			published: new Date("Sun Sep 13 2009 21:38:15")
+				author: "Kanye West",
+				comment: "Imma let u finish...",
+				published: new Date("Sun Sep 13 2009 21:37:44")
+			},
+			{
+				author: "Taylor Swift",
+				comment: ".___.",
+				published: new Date("Sun Sep 13 2009 21:38:15")
 		})
 		.target(element)
 		.helpers({
@@ -43,7 +43,7 @@ And all this in less than 1.5Kb gzipped! :)
 			}
 		})
 		.render(function () {
-			alert("yeeeeeahaaaaWW!");
+			alert("Finished!");
 		});
 
 
