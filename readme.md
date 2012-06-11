@@ -9,7 +9,9 @@ Shavejs is a layer ontop of Mustache.
 
 	shave()
 		.template("template.mustache")
-		.data(data)
+		.data({
+			
+		})
 		.target(element)
 		.helpers({
 			date: function (date) {
@@ -28,7 +30,7 @@ Shavejs is a layer ontop of Mustache.
 ## Methods
 
 ### `helper`
-Add or get helper function.
+Add or get a helper function.
 ##### Arguments
 * `name` - (String) The name to register the helper function by.
 * `func` - (Function) The helper function.
@@ -54,11 +56,9 @@ Sets or gets the template to be rendered.
 * `url` - (String) The url (or id) of the template.
 * `template` - (String) Optional. A mustache template.
 
-
 ### `render`
 Preprocesses the data if needed and passes it through the template.
 If the `shave` instance has a target defined the resulting html is inserted into it and the instance is returned.
-
 ##### Arguments
 * `callback` - (Function) A callback function to be called once rendering is done. The rendered html string is passed on as an argument.
 ##### Returns
