@@ -14,19 +14,17 @@
 	// Mustache isn't really AMD - but exposes a global
 	mustache = mustache || Mustache;
 	
-	var templates = {},
-		helpers = {},
+	var _templates = {},
+		_helpers = {},
 		isArray = Array.isArray || function (value) {
 			return value.constructor === Array;
 		};
 	
 	var Shave = function (options) {
-		this.state = "empty";
-		this.queue = [];
-		this.context = {
-			sort: null,
-			range: null
-		};
+		this._state = "empty";
+		this._queue = [];
+		this._sort = null;
+		this._range = null;
 		return this;
 	};
 	
@@ -35,28 +33,28 @@
 		template: function (url, template) {
 			
 			if (!url) {
-				return this.context.template;
+				return this._template;
 			}
 			
-			if (template && !(url in templates)) {
-				templates[url] = template;
+			if (template && !(url in _templates)) {
+				_templates[url] = template;
 			}
 			
-			if (template || (!template && url != this.context.url)) {
+			if (template || (!template && url != this._url)) {
 							
-				if (url in templates) {
-					var definition = templates[url];
-					this.context.url = url;
-					this.context.template = definition.template;
-					this.context.manifest = definition.manifest;
-					this.context.helpers = definition.helpers;
+				if (url in _templates) {
+					var definition = _templates[url];
+					this._url = url;
+					this._template = definition.template;
+					this._manifest = definition.manifest;
+					this._helpers = definition.helpers;
 				}
 				else {
 					
 					// read template into cache
 					// parse manifest from json header
 					
-					this.state = "waiting";
+					this._state = "waiting";
 					
 					var self = this,
 						xhr = new XMLHttpRequest();
@@ -64,7 +62,7 @@
 					xhr.onload = function () {
 						var manifest, template,
 							match = xhr.responseText.match(/^(?:\{\{!([\s\S]*?|)!\}\})?([\s\S]*|)$/),
-							_helpers = null;
+							helpers = null;
 							
 						template = match[2];
 						manifest = match[1] || null;
@@ -72,21 +70,21 @@
 						if (manifest) {
 							manifest = JSON.parse(manifest);
 							
-							_helpers = getHelperList(manifest);
+							helpers = getHelperList(manifest);
 						}
 						
-						templates[url] = {
+						_templates[url] = {
 							template: template,
 							manifest: manifest,
-							helpers: _helpers
+							helpers: helpers
 						};
 						
-						self.context.url = url;
-						self.context.template = template;
-						self.context.manifest = manifest;
-						self.context.helpers = _helpers;
+						self._url = url;
+						self._template = template;
+						self._manifest = manifest;
+						self._helpers = helpers;
 						
-						self.state = "ready";
+						self._state = "ready";
 						
 						dequeue(self);
 					};
@@ -100,77 +98,76 @@
 		manifest: function (manifest) {
 			
 			if (!manifest) {
-				return this.context.manifest;
+				return this._manifest;
 			}
 			
-			if (this.url && this.url in templates) {
-				templates[this.url].manifest = manifest;
+			if (this.url && this.url in _templates) {
+				_templates[this.url].manifest = manifest;
 			}
 			
-			this.context.manifest = manifest;
+			this._manifest = manifest;
 			
 		},
 		
 		target: function (element) {
 			
 			if (!element) {
-				return this.context.target || null;	
+				return this._target || null;	
 			}
 			
-			this.context.target = element;
+			this._target = element;
 			
 		},
 		
 		data: function (data) {
 			
 			if (!data) {
-				return this.context.data || null;
+				return this._data || null;
 			}
 			
-			this.context.data = data;
+			this._data = data;
 			
 		},
 		
 		helper: function (name, func) {
 			
 			if (!func) {
-				return helpers[name];
+				return _helpers[name];
 			}
 			
-			helpers[name] = func;
+			_helpers[name] = func;
 			
 		},
 		
-		helpers: function (_helpers) {
+		helpers: function (helpers) {
 			
 			if (!helpers) {
-				return helpers;
+				return _helpers;
 			}
 			
-			for (var name in _helpers) {
-				helpers[name] = _helpers[name];
+			for (var name in helpers) {
+				_helpers[name] = helpers[name];
 			}
 			
 		},
 		
 		render: function (callback) {
 			
-			var context = this.context;
-			
-			if (!context.template) {
+			if (!this._template) {
 				throw("Shave cannot render without a template!");
 			}
 	
-			if (!context.data) {
+			if (!this._data) {
 				throw("Shave cannot render without data!");
 			}
 			
-			var manifest = context.manifest,
-				data = context.data,
-				template = context.template,
+			var manifest = this._manifest,
+				data = this._data,
+				template = this._template,
 				output = (manifest) ? preprocess(manifest, data) : data,
-				sort = context.sort,
-				range = context.range,
+				target = this._target,
+				sort = this._sort,
+				range = this._range,
 				html;
 			
 			if (sort) {
@@ -188,9 +185,6 @@
 				var array, options;
 				for (var key in range) {
 					array = resolvePath(key, output);
-					if (window.console) {
-						console.log("range", key, output, array);
-					}
 					options = range[key];
 					if (!isArray(array)) {
 						throw("You can only set ranges on arrays");
@@ -206,8 +200,8 @@
 				
 			html = mustache.to_html(template, output);
 			
-			if (context.target) {
-				context.target.innerHTML = html;
+			if (target) {
+				target.innerHTML = html;
 			}
 			
 			if (typeof callback == "function") {
@@ -219,23 +213,23 @@
 		sort: function (key, func) {
 			
 			if (!key) {
-				return this.context.sort;
+				return this._sort;
 			}
 			
 			if (!func) {
-				return this.context.sort[key];
+				return this._sort[key];
 			}
 			
-			if (!this.context.sort) {
-				this.context.sort = {};
+			if (!this._sort) {
+				this._sort = {};
 			}
-			this.context.sort[key] = func;
+			this._sort[key] = func;
 			
 		},
 		
 		range: function (key, options) {
 			
-			var range = this.context.range;
+			var range = this._range;
 			
 			if (!key) {
 				return range;
@@ -244,7 +238,7 @@
 			if (options === null) {
 				delete range[key];
 				if (isEmpty(range)) {
-					this.context.range = null;
+					this._range = null;
 				}
 			}
 			else if (!options) {
@@ -253,7 +247,7 @@
 			else {
 				if (!range) {
 					range = {};
-					this.context.range = range;
+					this._range = range;
 				}
 				if (!(key in range)) {
 					range[key] = {};
@@ -269,12 +263,12 @@
 	function makeQueueable (method) {
 	
 		return function () {
-			if (this.state != "waiting" && this.queue.length == 0) {
+			if (this._state != "waiting" && this._queue.length == 0) {
 				var ret = method.apply(this, arguments);
 				return (ret === undefined) ? this : ret;
 			}
 			else {
-				this.queue.push([method, arguments]);
+				this._queue.push([method, arguments]);
 				return this;
 			}
 		};
@@ -289,10 +283,10 @@
 	
 	function dequeue (shave) {
 	
-		if (shave.state != "waiting" && shave.queue.length > 0) {
-			var item = shave.queue.shift();
+		if (shave._state != "waiting" && shave._queue.length > 0) {
+			var item = shave._queue.shift();
 			item[0].apply(shave, item[1]);
-			if (shave.queue.length > 0) {
+			if (shave._queue.length > 0) {
 				setTimeout(function () {
 					dequeue(shave);
 				}, 1);
@@ -369,8 +363,8 @@
 						split = key.split("|");
 						helper = (split.length > 1) ? split[1] : null;
 						realKey = split[0];
-						if (helper && helper in helpers && realKey in input) {
-							output[key] = helpers[helper](input[realKey]);
+						if (helper && helper in _helpers && realKey in input) {
+							output[key] = _helpers[helper](input[realKey]);
 							continue;
 						}
 					}
