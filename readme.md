@@ -1,4 +1,4 @@
-![Shave.js](http://dev.phloe.net/shavejs/img/logotype.png)
+![Shave.js](http://dev.phloe.net/shavejs/img/logotype.png)  
 Grooming your Mustache.
 
 Shave.js is a layer ontop of Mustache that makes it easier to:
@@ -90,45 +90,45 @@ would result in the following being console.logged:
 
 ## Methods
 
-### `shave#helper`
+### helper
 Add or get a helper function.
 ##### Arguments
 * `name` - (String) The name to register the helper function by.
 * `func` - (Function) Optional. The helper function.
 
-### `shave#helpers`
+### helpers
 Add or get helper functions.
 ##### Arguments
 * `_helpers` - (Object) Optional. Containing helper functions; keys for names, values for functions.
 
-### `shave#data`
+### data
 Sets or gets the data to populate the template at render.
 ##### Arguments
 * `data` - (Object) Optional. The data to populate the template.
 
-### `shave#target`
+### target
 Sets or gets the target to recieve the rendered html.
 ##### Arguments
 * `element` - (Element) Optional. The element that will get targeted by the `render` method.
 
-### `shave#template`
+### template
 Sets or gets the current template.
 ##### Arguments
 * `url` - (String) The url (or id) of the template.
 * `template` - (String) Optional. A mustache template.
 
-### `shave#manifest`
+### manifest
 Sets or gets the current manifest.
 ##### Arguments
 * `manifest` - (Object) Optional. A manifest object.
 
-### `shave#sort`
+### sort
 Lets you define instructions on arrays in the output you want sort - and the functions used for sorting.
 ##### Arguments
 * `key` - (String) A dot-separated string describing the path of the array in the output data.
 * `func` - (Function) Optional. A function to use for sorting the addressed array.
 
-### `shave#range`
+### range
 Lets you define offset and  on arrays in the output.
 ##### Arguments
 * `key` - (String) A dot-separated string describing the path of the array in the output data.
@@ -136,7 +136,7 @@ Lets you define offset and  on arrays in the output.
 	+ `offset` - (Number) Optional. Sets the index at which to start in the array.
 	+ `limit` - (Number) Optional. Sets the number of items to be rendered from the array.
 
-### `shave#render`
+### render
 Preprocesses the data if needed and passes it through the template.
 If the `shave` instance has a target defined the resulting html is inserted into it and the instance is returned.
 ##### Arguments
