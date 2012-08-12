@@ -1,4 +1,5 @@
 ![Shave.js](http://dev.phloe.net/shavejs/img/logotype.png)  
+
 Grooming your Mustache.
 
 Shave.js is a layer ontop of Mustache that makes it easier to:
