@@ -8,16 +8,16 @@ Shave.js is a layer ontop of Mustache that makes it easier to:
 * Offset any array in the output data.
 * Limit the number of items in any array in the output data.
 * Load templates on the fly with no hassle.
-* Handle formating of output data with helper functions. 
+* Handle formating of view data with helper functions. 
 
-All without you having to contort your viewmodels to fit a template's needs.
+All without you having to contort your models to fit a template's needs.
 
-With helpers your viewmodels can have more complex data structures reduced to Mustache friendly data;
+With helpers your models can have more complex data structures reduced to Mustache friendly view data;
 eg, Date objects can be turned into a localized date string or a string representing the time of day - or both at the same time!
 
 And all this in a tiny queueable and chainable api less than 1.5Kb gzipped! :)
 
-* TODO: Remap your model to the data consumed by any given Mustache template. 
+* TODO: Remap your model to the view data consumed by any given Mustache template. 
 
 
 ## Usage
@@ -89,58 +89,139 @@ would result in the following being console.logged:
 		<time>at 9:38:15 PM GMT+02:00 on September 13, 2009</time>
 	</article>
 
+
+
 ## Methods
 
+
+
 ### helper
-Add or get a helper function.
+
+Add a helper function or return the helper function associated with supplied `name`.
+
 ##### Arguments
+
 * `name` - (String) The name to register the helper function by.
 * `func` - (Function) Optional. The helper function.
 
+##### Returns
+
+The current `shave` instance or a helper (Function).
+
+
+
 ### helpers
-Add or get helper functions.
+
+Add helper functions or get a hash of all registered helper functions.
+
 ##### Arguments
+
 * `_helpers` - (Object) Optional. Containing helper functions; keys for names, values for functions.
 
+##### Returns
+
+The current `shave` instance or a hash of helper functions (Object).
+
+
+
 ### data
+
 Sets or gets the data to populate the template at render.
+
 ##### Arguments
+
 * `data` - (Object) Optional. The data to populate the template.
 
+##### Returns
+
+The current `shave` instance or the current registered data (Object).
+
+
+
 ### target
+
 Sets or gets the target to recieve the rendered html.
+
 ##### Arguments
+
 * `element` - (Element) Optional. The element that will get targeted by the `render` method.
 
+##### Returns
+
+The current `shave` instance or the current target for the rendered output (HTMLElement).
+
+
+
 ### template
+
 Sets or gets the current template.
+
 ##### Arguments
+
 * `url` - (String) The url (or id) of the template.
 * `template` - (String) Optional. A mustache template.
 
+##### Returns
+
+The current `shave` instance or the current template source (String).
+
+
+
 ### manifest
+
 Sets or gets the current manifest.
+
 ##### Arguments
+
 * `manifest` - (Object) Optional. A manifest object.
 
+##### Returns
+
+The current `shave` instance or the manifest for the current template (Object).
+
+
+
 ### sort
+
 Lets you define instructions on arrays in the output you want sort - and the functions used for sorting.
+
 ##### Arguments
+
 * `key` - (String) A dot-separated string describing the path of the array in the output data.
 * `func` - (Function) Optional. A function to use for sorting the addressed array.
 
+##### Returns
+
+The current `shave` instance or a hash of sorting functions (Object).
+
+
+
 ### range
+
 Lets you define offset and  on arrays in the output.
+
 ##### Arguments
+
 * `key` - (String) A dot-separated string describing the path of the array in the output data.
 * `options` - (Object) Optional. An object with the following options:
 	+ `offset` - (Number) Optional. Sets the index at which to start in the array.
 	+ `limit` - (Number) Optional. Sets the number of items to be rendered from the array.
 
+##### Returns
+
+The current `shave` instance or a hash of ranges (Object).
+
+
+
 ### render
+
 Preprocesses the data if needed and passes it through the template.
 If the `shave` instance has a target defined the resulting html is inserted into it and the instance is returned.
+
 ##### Arguments
+
 * `callback` - (Function) Optional. A callback function to be called once rendering is done. The rendered html string is passed on as an argument.
+
 ##### Returns
+
 The current `shave` instance.

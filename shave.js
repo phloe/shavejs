@@ -1,9 +1,9 @@
 (function (root, factory) {
-	if (typeof exports === "object") {
+	if (typeof exports == "object") {
 		module.exports = factory(require("mustache"));
 		root.XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 	}
-	else if (typeof define === "function" && define.amd) {
+	else if (typeof define == "function" && define.amd) {
 		define("shave", ["mustache"], factory);
 	}
 	else {
@@ -20,7 +20,7 @@
 			return value.constructor === Array;
 		};
 	
-	var Shave = function (options) {
+	var Shave = function () {
 		this._state = "empty";
 		this._queue = [];
 		this._sort = null;
@@ -56,7 +56,7 @@
 					
 					this._state = "waiting";
 					
-					var self = this,
+					var instance = this,
 						xhr = new XMLHttpRequest();
 					xhr.open("GET", url, true);
 					xhr.onload = function () {
@@ -79,14 +79,14 @@
 							helpers: helpers
 						};
 						
-						self._url = url;
-						self._template = template;
-						self._manifest = manifest;
-						self._helpers = helpers;
+						instance._url = url;
+						instance._template = template;
+						instance._manifest = manifest;
+						instance._helpers = helpers;
 						
-						self._state = "ready";
+						instance._state = "ready";
 						
-						dequeue(self);
+						dequeue(instance);
 					};
 					xhr.send(null);
 					
@@ -140,12 +140,13 @@
 		},
 		
 		helpers: function (helpers) {
+			var name;
 			
 			if (!helpers) {
 				return _helpers;
 			}
 			
-			for (var name in helpers) {
+			for (name in helpers) {
 				_helpers[name] = helpers[name];
 			}
 			
@@ -171,8 +172,8 @@
 				html;
 			
 			if (sort) {
-				var array;
-				for (var key in sort) {
+				var array, key;
+				for (key in sort) {
 					array = resolvePath(key, output);
 					if (!isArray(array)) {
 						throw("You can only sort arrays");
@@ -182,8 +183,8 @@
 			}
 			
 			if (range) {
-				var array, options;
-				for (var key in range) {
+				var array, options, key;
+				for (key in range) {
 					array = resolvePath(key, output);
 					options = range[key];
 					if (!isArray(array)) {
@@ -245,6 +246,7 @@
 				return range[key];
 			}
 			else {
+				var option;
 				if (!range) {
 					range = {};
 					this._range = range;
@@ -252,8 +254,8 @@
 				if (!(key in range)) {
 					range[key] = {};
 				}
-				for (var o in options) {
-					range[key][o] = options[o];
+				for (option in options) {
+					range[key][option] = options[option];
 				}
 			}
 		}
@@ -281,14 +283,14 @@
 	
 	Shave.prototype = prototype;
 	
-	function dequeue (shave) {
+	function dequeue (instance) {
 	
-		if (shave._state != "waiting" && shave._queue.length > 0) {
-			var item = shave._queue.shift();
-			item[0].apply(shave, item[1]);
-			if (shave._queue.length > 0) {
+		if (instance._state != "waiting" && instance._queue.length > 0) {
+			var item = instance._queue.shift();
+			item[0].apply(instance, item[1]);
+			if (instance._queue.length > 0) {
 				setTimeout(function () {
-					dequeue(shave);
+					dequeue(instance);
 				}, 1);
 			}
 		}
@@ -296,17 +298,18 @@
 	}
 	
 	function isEmpty (object) {
-		var empty = true;
-		for (var k in range) {
-			empty = false;
-			break;
+		var key;
+		for (key in object) {
+			return false;
 		}
-		return empty;
+		return true;
 	}
 	
 	function resolvePath (path, object) {
-		var keys = path.split("."),
-			l = keys.length, i = 0, key,
+		var key,
+			keys = path.split("."),
+			l = keys.length,
+			i = 0,
 			scope = object;
 		while (i < l) {
 			key = keys[i++];
@@ -321,12 +324,10 @@
 	}
 	
 	function getHelperList (manifest, deps) {
-		
+		var value, split, helper, key;
 		deps = deps || [];
 		
-		var value, split, helper;
-		
-		for (var key in manifest) {
+		for (key in manifest) {
 			split = key.split("|");
 			helper = (split.length > 1) ? split[1] : null;
 			if (helper && deps.indexOf(helper) == -1) {
@@ -348,17 +349,20 @@
 		if (typeof manifest == "object") {
 			if (isArray(manifest)) {
 				// array
-				var array = [], itemManifest = manifest[0];
-				for (var i = 0, l = input.length; i < l; i++) {
-					array.push(preprocess(itemManifest, input[i]));
+				var array = [],
+					itemManifest = manifest[0],
+					l = input.length,
+					i = 0;
+				while (i < l) {
+					array.push(preprocess(itemManifest, input[i++]));
 				}
 				output = array;
 			}
 			else {
 				// object
-				var split, helper, realKey;
+				var split, helper, key, realKey;
 				output = {};
-				for (var key in manifest) {
+				for (key in manifest) {
 					if (!(key in input)) {
 						split = key.split("|");
 						helper = (split.length > 1) ? split[1] : null;
@@ -381,8 +385,8 @@
 		return output;
 	}
 	
-	return function (options) {
-		return new Shave(options || null); 
+	return function () {
+		return new Shave(); 
 	};
 	
 }));
