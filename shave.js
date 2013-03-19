@@ -165,7 +165,7 @@
 			var manifest = this._manifest,
 				data = this._data,
 				template = this._template,
-				output = (manifest) ? preprocess(manifest, data) : data,
+				view = (manifest) ? preprocess(manifest, data) : data,
 				target = this._target,
 				sort = this._sort,
 				range = this._range,
@@ -174,7 +174,7 @@
 			if (sort) {
 				var array, key;
 				for (key in sort) {
-					array = resolvePath(key, output);
+					array = resolvePath(key, view);
 					if (!isArray(array)) {
 						throw("You can only sort arrays");
 					}
@@ -185,7 +185,7 @@
 			if (range) {
 				var array, options, key;
 				for (key in range) {
-					array = resolvePath(key, output);
+					array = resolvePath(key, view);
 					options = range[key];
 					if (!isArray(array)) {
 						throw("You can only set ranges on arrays");
@@ -199,7 +199,7 @@
 				}
 			}
 				
-			html = mustache.to_html(template, output);
+			html = mustache.to_html(template, view);
 			
 			if (target) {
 				target.innerHTML = html;

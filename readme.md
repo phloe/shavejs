@@ -116,7 +116,7 @@ Add helper functions or get a hash of all registered helper functions.
 
 ##### Arguments
 
-* `_helpers` - (Object) Optional. Containing helper functions; keys for names, values for functions.
+* `helpers` - (Object) Optional. Containing helper functions; keys for names, values for functions.
 
 ##### Returns
 
@@ -183,11 +183,11 @@ The current `shave` instance or the manifest for the current template (Object).
 
 ### sort
 
-Lets you define instructions on arrays in the output you want sort - and the functions used for sorting.
+Lets you define instructions on arrays in the view you want sort - and the functions used for sorting.
 
 ##### Arguments
 
-* `key` - (String) A dot-separated string describing the path of the array in the output data.
+* `key` - (String) A dot-separated string describing the path of the array in the view data.
 * `func` - (Function) Optional. A function to use for sorting the addressed array.
 
 ##### Returns
@@ -198,11 +198,11 @@ The current `shave` instance or a hash of sorting functions (Object).
 
 ### range
 
-Lets you define offset and  on arrays in the output.
+Lets you define offset and limit on arrays in the view.
 
 ##### Arguments
 
-* `key` - (String) A dot-separated string describing the path of the array in the output data.
+* `key` - (String) A dot-separated string describing the path of the array in the view data.
 * `options` - (Object) Optional. An object with the following options:
 	+ `offset` - (Number) Optional. Sets the index at which to start in the array.
 	+ `limit` - (Number) Optional. Sets the number of items to be rendered from the array.
