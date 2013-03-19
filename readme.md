@@ -4,9 +4,9 @@ Grooming your Mustache.
 
 Shave.js is a layer ontop of Mustache that makes it easier to:
 
-* Sort the order of any array in the output data.
-* Offset any array in the output data.
-* Limit the number of items in any array in the output data.
+* Sort the order of any array in the view data.
+* Offset any array in the view data.
+* Limit the number of items in any array in the view data.
 * Load templates on the fly with no hassle.
 * Handle formating of view data with helper functions. 
 
@@ -24,7 +24,7 @@ And all this in a tiny queueable and chainable api less than 1.5Kb gzipped! :)
 
 Shave.js makes use of a manifest which is just an object describing the structure of the data needed in a Mustache template.
 The manifest can be defined as a JSON snippet in a comment at the top of your template. This also serves as a convenient way of getting an overview of the data used in the template.  
-**NB**: the comment containing the manifest **must** be the very first thing in the template and **must** have its closing tag preceded by a bang (!).  
+**NB**: the comment containing the manifest **must** be the very first thing in the template and **must** have its closing tag preceded by a bang (!).
 
 comments.mustache:
 	
